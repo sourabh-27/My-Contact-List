@@ -3,11 +3,15 @@ const path = require('path');
 
 const port = 8000;
 
+
+const db = require('./config/mongoose');
+const Contact = require('./models/contact')
+
 const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.urlencoded());
+app.use(express.urlencoded({extended: true}));
 app.use(express.static('assets'));
 
 //Middleware 1
@@ -39,9 +43,16 @@ var contactList = [
 
 app.get('/', function(req, res){
     // res.send("<h1>Cool, it is running. Is it really?</h1>");
-    return res.render('home', { 
-        title: "I am groot",
-        contacts_list: contactList
+
+    Contact.find({}, function(err, contacts){
+        if(err){
+            console.log("Error in fetching contacts from db");
+            return;
+        }
+        return res.render('home', { 
+            title: "I am groot",
+            contacts_list: contacts
+        });
     });
 });
 
@@ -52,27 +63,40 @@ app.get('/practice', function(req, res){
 });
 
 app.post('/create-contact', function(req, res){
-    contactList.push({
+    // contactList.push({
+    //     name: req.body.name,
+    //     phone: req.body.phone
+    // });
+
+    Contact.create({
         name: req.body.name,
         phone: req.body.phone
+    }, function(err, newContact){
+        if(err){
+            console.log("Error in creating a contact");
+            return;
+        }
+        console.log('*******', newContact);
+        return res.redirect('back');
     });
-
-    return res.redirect('back')
+    
 });
 
 //for deleting a contact get the query from url which is requested and find the index and delete the contact
 app.get('/delete-contact/', function(req, res){
     console.log(req.query);
-    let phone = req.query.phone;
+    let id = req.query.id;
     // console.log("phone", phone);
-    let contactIndex = contactList.findIndex(contact => contact.phone == phone);
-    // console.log("contact-index", contactIndex);
+    Contact.findByIdAndDelete(id, function(err){
+        if(err){
+            console.log("Error in deleting an object from database");
+            return;
+        }
 
-    if(contactIndex != -1){
-        contactList.splice(contactIndex, 1);
-    }
+        return res.redirect('back');
+    });
+
     // console.log("size", contactList.length);
-    return res.redirect('back');
 });
 
 // where is app.listen  ??
