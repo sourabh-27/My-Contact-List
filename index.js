@@ -28,7 +28,7 @@ var contactList = [
         phone: "9889840494"
     }, 
     {
-        name:"Tony Stark",
+        name:"Tony",
         phone:"7942456678"
     },
     {
@@ -58,6 +58,21 @@ app.post('/create-contact', function(req, res){
     });
 
     return res.redirect('back')
+});
+
+//for deleting a contact get the query from url which is requested and find the index and delete the contact
+app.get('/delete-contact/', function(req, res){
+    console.log(req.query);
+    let phone = req.query.phone;
+    // console.log("phone", phone);
+    let contactIndex = contactList.findIndex(contact => contact.phone == phone);
+    // console.log("contact-index", contactIndex);
+
+    if(contactIndex != -1){
+        contactList.splice(contactIndex, 1);
+    }
+    // console.log("size", contactList.length);
+    return res.redirect('back');
 });
 
 // where is app.listen  ??

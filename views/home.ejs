@@ -20,8 +20,18 @@
                     <li>
                         <p id="contactName"><%= i.name %></p>
                         <p id="contactNum"><%= i.phone %></p>
+                        <span class="delete-button">
+                            <a href="/delete-contact/?phone=<%= i.phone %>">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </span>
                     </li>
                 </div>
+                <!-- <div class="delete-button">
+                    <a href>
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div> -->
             <% } %>
         </ul>
 
